@@ -11,8 +11,6 @@ module.exports = (env) ->
 
     init: (app, @framework, @config) =>
       @interfaceAddress = @config.interfaceAddress if @config.interfaceAddress?
-      @invert = @config.invert || false
-      @_contact = @invert
       @debug = @config.debug || false
       @base = commons.base @, 'Plugin'
       @capture = new cap.Cap()
@@ -31,7 +29,7 @@ module.exports = (env) ->
 
       # auto-discovery
       @framework.deviceManager.on('discover', (eventData) =>
-        @framework.deviceManager.discoverMessage 'pimatic-amazing-dash-button', 'Searching for dash-buttons. Press dash-button now!'
+        @framework.deviceManager.discoverMessage 'pimatic-amazing-dash-button', 'Searching for dash-buttons. Please press dash-button now!'
         @candidatesSeen = []
         @lastId = null
 
@@ -78,7 +76,7 @@ module.exports = (env) ->
       try
         @capture.setMinBytes 0
       catch e
-        @_base.debug e
+        @base.debug e
 
       @capture.on "packet", @_rawPacketHandler
 
