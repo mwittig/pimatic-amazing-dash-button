@@ -1,0 +1,54 @@
+{
+  "name": "pimatic-amazing-dash-button",
+  "version": "0.9.0",
+  "author": {
+    "name": "Marcus Wittig",
+    "url": "https://github.com/mwittig"
+  },
+  "main": "amazing-dash-button",
+  "files": [
+    "amazing-dash-button.coffee",
+    "amazing-dash-button-config-schema.coffee",
+    "device-config-schema.coffee",
+    "LICENSE",
+    "HISTORY.md",
+    "README.md"
+  ],
+  "keywords": [
+    "amazon",
+    "amazon-dash",
+    "dash",
+    "button",
+    "arp",
+    "pimatic"
+  ],
+  "homepage": "https://github.com/mwittig/pimatic-amazing-dash-button/tree/master",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mwittig/pimatic-amazing-dash-button.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mwittig/pimatic-amazing-dash-button/issues"
+  },
+  "license": "AGPL-3.0",
+  "maintainers": [
+    {
+      "name": "mwittig",
+      "url": "https://github.com/mwittig"
+    }
+  ],
+  "configSchema": "amazing-dash-button-config-schema.coffee",
+  "dependencies": {
+    "cap": "^0.1.1",
+    "pimatic-plugin-commons": "^0.9.2"
+  },
+  "optionalDependencies": {},
+  "peerDependencies": {
+    "pimatic": ">=0.8.0 <1.0.0"
+  },
+  "engines": {
+    "node": ">0.8.x",
+    "npm": ">1.1.x"
+  }
+}
