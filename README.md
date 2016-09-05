@@ -35,7 +35,7 @@ The plugin has the following configuration properties:
 
 ## Device Configuration
 
-With pimatic v0.9 nad higher dash-button devices can be automatically discovered.
+As of pimatic v0.9 dash-button devices can be automatically discovered.
 
     {
           "id": "AmazingDashButton1",
