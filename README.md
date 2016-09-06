@@ -56,7 +56,8 @@ The plugin has the following configuration properties:
 
 [![PayPal donate button](https://img.shields.io/paypal/donate.png?color=blue)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=E44SSB34CVXP2)
 
-If you like this plugin, please consider &#x2605; [starring the project on github](https://github.com/mwittig/pimatic-amazing-dash-button).
+If you like this plugin, please consider &#x2605; starring 
+[the project on github](https://github.com/mwittig/pimatic-amazing-dash-button).
 
 Contributions to the project are  welcome. You can simply fork the project and create a pull request with 
 your contribution to start with. If you wish to support my work with a donation I'll highly appreciate this. 
