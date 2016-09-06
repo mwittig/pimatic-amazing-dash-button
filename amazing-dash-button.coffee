@@ -34,25 +34,17 @@ module.exports = (env) ->
         @lastId = null
 
         @arpPacketHandler = (arp) =>
-          candidateArp = arp.info.srcmac.toUpperCase()
-          strippedArpTrunc = candidateArp.replace(/:/g,'').substring(0,6)
-
-          # List of registered Mac addresses with IEEE as of 18 July 2016 for Amazon Technologies Inc.
-          # source: https://regauth.standards.ieee.org/standards-ra-web/pub/view.html#registries
-          amazonVendorIds = [
-            "747548", "F0D2F1", "8871E5", "74C246", "F0272D", "0C47C9",
-            "A002DC", "AC63BE", "44650D", "50F5DA", "84D6D0"
-          ]
-          if strippedArpTrunc in amazonVendorIds and candidateArp not in @candidatesSeen
-            @base.debug 'Amazon device (possibly a dash-button) detected: ' + candidateArp
-            @candidatesSeen.push candidateArp
+          candidateArpAddress = arp.info.srcmac.toUpperCase()
+          if candidateArpAddress not in @candidatesSeen
+            @base.debug 'Amazon device (possibly a dash-button) detected: ' + candidateArpAddress
+            @candidatesSeen.push candidateArpAddress
             @lastId = @base.generateDeviceId @framework, "dash", @lastId
 
             deviceConfig =
               id: @lastId
               name: @lastId
               class: 'AmazingDashButton'
-              macAddress: candidateArp
+              macAddress: candidateArpAddress
 
             @framework.deviceManager.discoveredDevice(
               'pimatic-amazing-dash-button', "#{deviceConfig.name} (#{deviceConfig.macAddress})", deviceConfig
@@ -72,7 +64,18 @@ module.exports = (env) ->
         device = cap.findDevice()
       @base.debug "Sniffing for ARP requests on device", device
 
-      linkType = @capture.open device, 'arp', 1024 * 1024, @buffer
+      # List of registered Mac addresses with IEEE as of 18 July 2016 for Amazon Technologies Inc.
+      # source: https://regauth.standards.ieee.org/standards-ra-web/pub/view.html#registries
+      amazonVendorIds = [
+        "747548", "F0D2F1", "8871E5", "74C246", "F0272D", "0C47C9", "A002DC", "AC63BE", "44650D", "50F5DA", "84D6D0"
+      ]
+      filter = amazonVendorIds.map( (vendorId) ->
+        "(ether[6:2] == 0x#{vendorId.substring 0,4} and ether[8:1] == 0x#{vendorId.substring 4,6})"
+      ).reduce( (left, right) ->
+        left + " or " + right
+      )
+
+      linkType = @capture.open device, "arp and (#{filter})", 10 * 65536, @buffer
       try
         @capture.setMinBytes 0
       catch e
@@ -116,7 +119,6 @@ module.exports = (env) ->
       super()
 
     getContact: () -> Promise.resolve @_contact
-
 
   # ###Finally
   # Create a instance of my plugin
