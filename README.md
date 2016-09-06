@@ -15,7 +15,7 @@ cross-platform binding for performing packet capturing with node.js. It can be u
 
 **This plugin requires libpcap to capture ARP requests on the network**. On Raspberry PI and comparable systems `libpcap` 
 must be installed, i.e. `sudo apt-get install libpcap-dev`. 
-On Windows, [WinPcap](http://www.winpcap.org/install/default.htm) most be installed.
+On Windows, [WinPcap](http://www.winpcap.org/install/default.htm) must be installed.
 
 
 ## Plugin Configuration
