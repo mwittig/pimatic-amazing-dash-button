@@ -1,8 +1,8 @@
 # Release History
 
 * 20160907, V0.9.4
-    * Performance Improvement: Now using capture filter to filter for ARP where source mac matches one of the 
-      given vendor ids. This results in lesser context switches.
+    * Performance Improvement: Now using PCAP capture filter for ARP requests where source MAC address matches one of 
+      the given vendor ids. This results in lesser context switches and reduces memory consumption.
 
 * 20160906, V0.9.3
     * Reduced requested PCAP buffer size to 1 MB
