@@ -72,7 +72,7 @@ module.exports = (env) ->
         device = cap.findDevice()
       @base.debug "Sniffing for ARP requests on device", device
 
-      linkType = @capture.open device, 'arp', 10 * 1024 * 1024, @buffer
+      linkType = @capture.open device, 'arp', 1024 * 1024, @buffer
       try
         @capture.setMinBytes 0
       catch e
