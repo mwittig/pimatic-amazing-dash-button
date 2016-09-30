@@ -67,7 +67,9 @@ module.exports = (env) ->
       # List of registered Mac addresses with IEEE as of 18 July 2016 for Amazon Technologies Inc.
       # source: https://regauth.standards.ieee.org/standards-ra-web/pub/view.html#registries
       amazonVendorIds = [
-        "747548", "F0D2F1", "8871E5", "74C246", "F0272D", "0C47C9", "A002DC", "AC63BE", "44650D", "50F5DA", "84D6D0"
+        "F0D2F1", "8871E5", "74C246", "F0272D", "0C47C9",
+        "A002DC", "747548", "AC63BE", "44650D", "50F5DA",
+        "84D6D0", "34D270"
       ]
       filter = amazonVendorIds.map( (vendorId) ->
         "(ether[6:2] == 0x#{vendorId.substring 0,4} and ether[8:1] == 0x#{vendorId.substring 4,6})"
