@@ -1,5 +1,8 @@
 # Release History
 
+* 20160930, V0.9.6
+    * Added missing MAC vendor id 
+    
 * 20160908, V0.9.5
     * Updated README to provide a more comprehensive documentation
     * Minor changes
