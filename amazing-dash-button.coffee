@@ -2,6 +2,7 @@
 module.exports = (env) ->
 
   Promise = env.require 'bluebird'
+  net = require 'net'
   cap = require 'cap'
   commons = require('pimatic-plugin-commons')(env)
 
@@ -34,21 +35,27 @@ module.exports = (env) ->
         @lastId = null
 
         @arpPacketHandler = (arp) =>
-          candidateArpAddress = arp.info.srcmac.toUpperCase()
+          candidateArpAddress = arp.info.sendermac.toUpperCase()
           if candidateArpAddress not in @candidatesSeen
-            @base.debug 'Amazon device (possibly a dash-button) detected: ' + candidateArpAddress
+            @base.debug 'Amazon device detected: ' + candidateArpAddress
             @candidatesSeen.push candidateArpAddress
-            @lastId = @base.generateDeviceId @framework, "dash", @lastId
+            @_probeChromeCastPort(arp.info.senderip).then (probeSucceeded) =>
+              if probeSucceeded
+                @base.debug 'Amazon device appears to be a Chromecast server: ' + candidateArpAddress
+              else
+                @lastId = @base.generateDeviceId @framework, "dash", @lastId
 
-            deviceConfig =
-              id: @lastId
-              name: @lastId
-              class: 'AmazingDashButton'
-              macAddress: candidateArpAddress
+                deviceConfig =
+                  id: @lastId
+                  name: @lastId
+                  class: 'AmazingDashButton'
+                  macAddress: candidateArpAddress
 
-            @framework.deviceManager.discoveredDevice(
-              'pimatic-amazing-dash-button', "#{deviceConfig.name} (#{deviceConfig.macAddress})", deviceConfig
-            )
+                @framework.deviceManager.discoveredDevice(
+                  'pimatic-amazing-dash-button',
+                  "#{deviceConfig.name} (#{deviceConfig.macAddress}, #{arp.info.senderip})",
+                  deviceConfig
+                )
 
         @on 'arpPacket', @arpPacketHandler
         @timer = setTimeout( =>
@@ -91,7 +98,28 @@ module.exports = (env) ->
 
     _rawPacketHandler: () =>
       ret = cap.decoders.Ethernet @buffer
-      @emit 'arpPacket', ret if ret.info.type is 2054
+      if ret.info.type is cap.decoders.PROTOCOL.ETHERNET.ARP
+        @emit 'arpPacket', cap.decoders.ARP @buffer, ret.offset
+
+    _probeChromeCastPort: (host, port=8008) ->
+      client = new net.Socket
+      return new Promise( (resolve) =>
+        client.setTimeout 3000, =>
+          @base.debug "Timeout"
+          resolve false
+        client.on "error", (error) =>
+          @base.debug error
+          resolve false
+        client.connect port, host, =>
+          @base.debug "Connected to device #{host}:#{port}"
+          resolve true
+      )
+      .catch =>
+        @base.debug "Exception"
+        resove false
+      .finally =>
+        client.destroy()
+
 
   class AmazingDashButton extends env.devices.ContactSensor
     # Initialize device by reading entity definition from middleware
@@ -104,7 +132,7 @@ module.exports = (env) ->
       @debug = @plugin.debug || false
       @base = commons.base @, @config.class
       @arpPacketHandler = (arp) =>
-        if arp.info.srcmac.toUpperCase() is @macAddress
+        if arp.info.sendermac.toUpperCase() is @macAddress
           @_setContact not @_invert
           clearTimeout @timer if @timer?
           @timer = setTimeout( =>

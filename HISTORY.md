@@ -1,5 +1,8 @@
 # Release History
 
+* 20161003, V0.9.7
+    * Improved auto-discovery: Chromecast devices should no longer be discovered as dash-button devices 
+    
 * 20160930, V0.9.6
     * Added missing MAC vendor id 
     
