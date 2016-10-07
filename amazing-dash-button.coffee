@@ -30,7 +30,13 @@ module.exports = (env) ->
 
       # auto-discovery
       @framework.deviceManager.on('discover', (eventData) =>
-        @framework.deviceManager.discoverMessage 'pimatic-amazing-dash-button', 'Searching for dash-buttons. Please press dash-button now!'
+        if @noInterfacesFound?
+          @framework.deviceManager.discoverMessage 'pimatic-amazing-dash-button', @noInterfacesFound
+          @base.error @noInterfacesFound
+          return
+        else
+          @framework.deviceManager.discoverMessage 'pimatic-amazing-dash-button', 'Searching for dash-buttons. Please press dash-button now!'
+
         @candidatesSeen = []
         @lastId = null
 
@@ -69,7 +75,13 @@ module.exports = (env) ->
         device = cap.findDevice @interfaceAddress
       else
         device = cap.findDevice()
-      @base.debug "Sniffing for ARP requests on device", device
+
+      if device?
+        @base.debug "Sniffing for ARP requests on device", device
+      else
+        @noInterfacesFound = "Error: No suitable network interface found for sniffing ARP requests"
+        @base.error @noInterfacesFound
+        return
 
       # List of registered Mac addresses with IEEE as of 18 July 2016 for Amazon Technologies Inc.
       # source: https://regauth.standards.ieee.org/standards-ra-web/pub/view.html#registries
