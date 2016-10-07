@@ -1,5 +1,9 @@
 # Release History
 
+* 20161007, V0.9.8
+    * Improved error handling if no network devices found to capturing ARP requests
+    * Updated dependencies to cap@0.1.2 which contains the contributed ARP decode function 
+    
 * 20161003, V0.9.7
     * Improved auto-discovery: Chromecast devices should no longer be discovered as dash-button devices 
     
