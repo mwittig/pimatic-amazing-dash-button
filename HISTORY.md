@@ -1,5 +1,10 @@
 # Release History
 
+* 20161016, V0.9.9
+    * Added validation and normalization for `macAddress` property
+    * Added dash-button image
+    * Revised README, added section on Stickers and Donations
+
 * 20161007, V0.9.8
     * Improved error handling if no network devices found to capturing ARP requests
     * Updated dependencies to cap@0.1.2 which contains the contributed ARP decode function 
