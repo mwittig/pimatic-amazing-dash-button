@@ -1,8 +1,10 @@
+![Amazing Dash-Button](https://github.com/mwittig/pimatic-amazing-dash-button/raw/master/assets/images/dash-buttons.jpg)
 # pimatic-amazing-dash-button
 
 [![Npm Version](https://badge.fury.io/js/pimatic-amazing-dash-button.svg)](http://badge.fury.io/js/pimatic-amazing-dash-button)
 [![Build Status](https://travis-ci.org/mwittig/pimatic-amazing-dash-button.svg?branch=master)](https://travis-ci.org/mwittig/pimatic-amazing-dash-button)
 [![Dependency Status](https://david-dm.org/mwittig/pimatic-amazing-dash-button.svg)](https://david-dm.org/mwittig/pimatic-amazing-dash-button)
+
 
 A pimatic plugin for Amazon's dash-buttons. It is a pretty light-weight implementation which uses a `ContactSensor` 
 device abstraction for the dash-button. Auto-discovery of dash-buttons is supported.
@@ -11,6 +13,18 @@ The plugin sniffs for ARP probes which will be sent out by a dash-button when th
 button is pressed. The plugin is based on [cap](https://www.npmjs.com/package/cap), a
 cross-platform `libpcap` binding for performing packet capturing with node.js. It can be used 
 on *nix and Windows systems. 
+
+### Contributions
+
+If you like this plugin, please consider &#x2605; starring 
+[the project on github](https://github.com/mwittig/pimatic-amazing-dash-button). Contributions to the project are  welcome. You can simply fork the project and create a pull request with 
+your contribution to start with. 
+
+### Stickers and Donations
+
+Happy with pimatic and using it everyday? If you like to obtain one of these amazing dash-button stickers, please 
+[consider a donation](https://pimatic.org/pages/donate/) to support the pimatic development and 
+the operation of the website and user forum.
 
 ## Installation
 
@@ -49,7 +63,6 @@ The plugin has the following configuration properties:
 | interfaceAddress  | -        | String  | IP address associated with the network interface which shall be used to listen to ARP requests (optional) |
 
 
-
 ## Device Configuration
 
 As of pimatic v0.9, dash-button devices can be automatically discovered. Simply open the "Devices" view of 
@@ -66,11 +79,11 @@ device using the device editor.
           "macAddress": "AC:63:BE:B3:BE:78"
     }
 
-The plugin has the following configuration properties:
+The device has the following configuration properties:
 
 | Property          | Default  | Type    | Description                                 |
 |:------------------|:---------|:--------|:--------------------------------------------|
-| interfaceAddress  | -        | String  | MAC address of the device                   |
+| macAddress        | -        | String  | MAC address of the device                   |
 | invert            | false    | String  | If true, invert the contact state, i.e., contact is 'closed' if dash-button not pressed |
 | holdTime          | 1500     | Integer | The number of milliseconds the contact shall enter the state indicating button pressed (closed if not inverted) |
 
@@ -82,16 +95,6 @@ predicate: `{device} is opened|closed`. For example, if you wish to toggle a `Po
 is pressed you can create a rule as follows: 
 
     when AmazingDashButton1 is closed then toggle {PowerSwitch Device}
-
-## Contributions and Donations
-
-[![PayPal donate button](https://img.shields.io/paypal/donate.png?color=blue)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=E44SSB34CVXP2)
-
-If you like this plugin, please consider &#x2605; starring 
-[the project on github](https://github.com/mwittig/pimatic-amazing-dash-button).
-
-Contributions to the project are  welcome. You can simply fork the project and create a pull request with 
-your contribution to start with. If you wish to support my work with a donation I'll highly appreciate this. 
 
 ## History
 
