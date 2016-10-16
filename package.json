@@ -8,6 +8,7 @@
   },
   "main": "amazing-dash-button",
   "files": [
+    "assets",
     "amazing-dash-button.coffee",
     "amazing-dash-button-config-schema.coffee",
     "device-config-schema.coffee",
