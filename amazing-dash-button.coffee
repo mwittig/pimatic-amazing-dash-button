@@ -23,6 +23,7 @@ module.exports = (env) ->
       # register devices
       deviceConfigDef = require("./device-config-schema")
       @framework.deviceManager.registerDeviceClass("AmazingDashButton",
+        prepareConfig: AmazingDashButton.prepareConfig
         configDef: deviceConfigDef.AmazingDashButton,
         createCallback: (@config, lastState) =>
           new AmazingDashButton(@config, @, lastState)
@@ -41,7 +42,7 @@ module.exports = (env) ->
         @lastId = null
 
         @arpPacketHandler = (arp) =>
-          candidateArpAddress = arp.info.sendermac.toUpperCase()
+          candidateArpAddress = arp.info.sendermac
           if candidateArpAddress not in @candidatesSeen
             @base.debug 'Amazon device detected: ' + candidateArpAddress
             @candidatesSeen.push candidateArpAddress
@@ -134,17 +135,25 @@ module.exports = (env) ->
 
 
   class AmazingDashButton extends env.devices.ContactSensor
+
+    @prepareConfig: (config) =>
+      address = (config.macAddress || '').replace /\W/g, ''
+      if address.length is 12
+        config.macAddress = address.replace(/(.{2})/g, '$1:').toLowerCase().slice(0, -1)
+      else
+        env.logger.error "Invalid MAC address: #{config.macAddress || 'Property "address" missing'}"
+
     # Initialize device by reading entity definition from middleware
     constructor: (@config, @plugin, lastState) ->
       @id = @config.id
       @name = @config.name
-      @macAddress = @config.macAddress.toUpperCase()
+      @macAddress = @config.macAddress
       @_invert = @config.invert || false
       @_contact = @_invert
       @debug = @plugin.debug || false
       @base = commons.base @, @config.class
       @arpPacketHandler = (arp) =>
-        if arp.info.sendermac.toUpperCase() is @macAddress
+        if arp.info.sendermac is @macAddress
           @_setContact not @_invert
           clearTimeout @timer if @timer?
           @timer = setTimeout( =>
