@@ -1,5 +1,8 @@
 # Release History
 
+* 20161106, V0.9.10
+    * Added vendor id 00BB3A as reported by @kiwikern, issue #3
+    
 * 20161016, V0.9.9
     * Added validation and normalization for `macAddress` property
     * Added dash-button image
