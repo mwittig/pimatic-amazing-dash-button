@@ -4,6 +4,7 @@ module.exports = (env) ->
   Promise = env.require 'bluebird'
   net = require 'net'
   cap = require 'cap'
+  bootp = require './bootp'
   commons = require('pimatic-plugin-commons')(env)
 
 
@@ -41,14 +42,14 @@ module.exports = (env) ->
         @candidatesSeen = []
         @lastId = null
 
-        @arpPacketHandler = (arp) =>
-          candidateArpAddress = arp.info.sendermac
-          if candidateArpAddress not in @candidatesSeen
-            @base.debug 'Amazon device detected: ' + candidateArpAddress
-            @candidatesSeen.push candidateArpAddress
-            @_probeChromeCastPort(arp.info.senderip).then (probeSucceeded) =>
+        @candidateInfoHandler = (info) =>
+          candidateAddress = info.mac
+          if candidateAddress not in @candidatesSeen
+            @base.debug 'Amazon device detected: ' + candidateAddress
+            @candidatesSeen.push candidateAddress
+            @_probeChromeCastPort(info.ip).then (probeSucceeded) =>
               if probeSucceeded
-                @base.debug 'Amazon device appears to be a Chromecast server: ' + candidateArpAddress
+                @base.debug 'Amazon device appears to be a Chromecast server: ' + candidateAddress
               else
                 @lastId = @base.generateDeviceId @framework, "dash", @lastId
 
@@ -56,17 +57,17 @@ module.exports = (env) ->
                   id: @lastId
                   name: @lastId
                   class: 'AmazingDashButton'
-                  macAddress: candidateArpAddress
+                  macAddress: candidateAddress
 
                 @framework.deviceManager.discoveredDevice(
                   'pimatic-amazing-dash-button',
-                  "#{deviceConfig.name} (#{deviceConfig.macAddress}, #{arp.info.senderip})",
+                  "#{deviceConfig.name} (#{deviceConfig.macAddress}, #{info.ip})",
                   deviceConfig
                 )
 
-        @on 'arpPacket', @arpPacketHandler
+        @on 'candidateInfo', @candidateInfoHandler
         @timer = setTimeout( =>
-          @removeListener 'arpPacket', @arpPacketHandler
+          @removeListener 'candidateInfo', @candidateInfoHandler
         , eventData.time
         )
       )
@@ -98,7 +99,8 @@ module.exports = (env) ->
         left + " or " + right
       )
 
-      linkType = @capture.open device, "arp and (#{filter})", 10 * 65536, @buffer
+      pcapFilter = "(arp or (udp and src port 68 and dst port 67 and udp[247:4] == 0x63350103)) and (#{filter})"
+      linkType = @capture.open device, pcapFilter, 10 * 65536, @buffer
       try
         @capture.setMinBytes 0
       catch e
@@ -112,27 +114,42 @@ module.exports = (env) ->
 
     _rawPacketHandler: () =>
       ret = cap.decoders.Ethernet @buffer
-      if ret.info.type is cap.decoders.PROTOCOL.ETHERNET.ARP
-        @emit 'arpPacket', cap.decoders.ARP @buffer, ret.offset
+      candidateInfo = {}
+      if ret.info.type is cap.decoders.PROTOCOL.ETHERNET.IPV4
+        r = cap.decoders.IPV4 @buffer, ret.offset
+        dhcp = bootp.BOOTP @buffer, r.offset + 8
+        candidateInfo.mac = dhcp.info.clientmac
+        candidateInfo.ip = dhcp.info.requestedip
+        @base.debug "DHCP", candidateInfo
+        @emit 'candidateInfo', candidateInfo
+      else if ret.info.type is cap.decoders.PROTOCOL.ETHERNET.ARP
+        arp = cap.decoders.ARP @buffer, ret.offset
+        candidateInfo.mac = arp.info.sendermac
+        candidateInfo.ip = arp.info.senderip
+        @base.debug "ARP", candidateInfo
+        @emit 'candidateInfo', candidateInfo
 
     _probeChromeCastPort: (host, port=8008) ->
-      client = new net.Socket
-      return new Promise( (resolve) =>
-        client.setTimeout 3000, =>
-          @base.debug "Timeout"
+      if host?.length
+        client = new net.Socket
+        new Promise( (resolve) =>
+          client.setTimeout 3000, =>
+            @base.debug "Timeout"
+            resolve false
+          client.on "error", (error) =>
+            @base.debug error
+            resolve false
+          client.connect port, host, =>
+            @base.debug "Connected to device #{host}:#{port}"
+            resolve true
+        )
+        .catch =>
+          @base.debug "Exception"
           resolve false
-        client.on "error", (error) =>
-          @base.debug error
-          resolve false
-        client.connect port, host, =>
-          @base.debug "Connected to device #{host}:#{port}"
-          resolve true
-      )
-      .catch =>
-        @base.debug "Exception"
-        resove false
-      .finally =>
-        client.destroy()
+        .finally =>
+          client.destroy()
+      else
+        Promise.resolve false
 
 
   class AmazingDashButton extends env.devices.ContactSensor
@@ -153,8 +170,9 @@ module.exports = (env) ->
       @_contact = @_invert
       @debug = @plugin.debug || false
       @base = commons.base @, @config.class
-      @arpPacketHandler = (arp) =>
-        if arp.info.sendermac is @macAddress
+      @candidateInfoHandler = (info) =>
+        if not @timer? and info.mac is @macAddress
+          @base.debug "Amazon dash button triggered (#{info.mac})"
           @_setContact not @_invert
           clearTimeout @timer if @timer?
           @timer = setTimeout( =>
@@ -163,11 +181,11 @@ module.exports = (env) ->
           , @config.holdTime
           )
       super()
-      @plugin.on 'arpPacket', @arpPacketHandler
+      @plugin.on 'candidateInfo', @candidateInfoHandler
 
     destroy: () ->
       clearTimeout @timer if @timer?
-      @plugin.removeListener 'arpPacket', @arpPacketHandler
+      @plugin.removeListener 'candidateInfo', @candidateInfoHandler
       super()
 
     getContact: () -> Promise.resolve @_contact

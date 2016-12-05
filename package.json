@@ -12,6 +12,7 @@
     "amazing-dash-button.coffee",
     "amazing-dash-button-config-schema.coffee",
     "device-config-schema.coffee",
+    "bootp.js",
     "LICENSE",
     "HISTORY.md",
     "README.md"
@@ -42,7 +43,7 @@
   "configSchema": "amazing-dash-button-config-schema.coffee",
   "dependencies": {
     "cap": "^0.1.2",
-    "pimatic-plugin-commons": "^0.9.2"
+    "pimatic-plugin-commons": "^0.9.3"
   },
   "optionalDependencies": {},
   "peerDependencies": {
