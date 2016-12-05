@@ -1,5 +1,8 @@
 # Release History
 
+* 20161205, V0.9.11
+    * Added support for DHCP-based detection of dash buttons, issue #6
+    
 * 20161106, V0.9.10
     * Added vendor id 00BB3A as reported by @kiwikern, issue #3
     
