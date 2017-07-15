@@ -1,5 +1,8 @@
 # Release History
 
+* 20170716, V0.9.12
+    * Updated list of Amazon Vendor Ids, issue #8
+    
 * 20161205, V0.9.11
     * Added support for DHCP-based detection of dash buttons, issue #6
     
