@@ -85,13 +85,15 @@ module.exports = (env) ->
         @base.error @noInterfacesFound
         return
 
-      # List of registered Mac addresses with IEEE as of 18 July 2016 for Amazon Technologies Inc.
+      # List of registered Mac addresses with IEEE as of 15 July 2017 for Amazon Technologies Inc.
       # source: https://regauth.standards.ieee.org/standards-ra-web/pub/view.html#registries
       # 00BB3A is marked as private and has been reported to be used for dash-buttons
       amazonVendorIds = [
-        "F0D2F1", "8871E5", "74C246", "F0272D", "0C47C9",
-        "A002DC", "747548", "AC63BE", "44650D", "50F5DA",
-        "84D6D0", "34D270", "00BB3A"
+        "F0D2F1", "8871E5", "F0272D", "74C246", "6837E9",
+        "78E103", "A002DC", "0C47C9", "747548", "AC63BE",
+        "FCA667", "18742E", "00FC8B", "FC65DE", "44650D",
+        "50F5DA", "6854FD", "40B4CD", "34D270", "84D6D0",
+        "B47C9C", "00BB3A"
       ]
       filter = amazonVendorIds.map( (vendorId) ->
         "(ether[6:2] == 0x#{vendorId.substring 0,4} and ether[8:1] == 0x#{vendorId.substring 4,6})"
