@@ -1,6 +1,8 @@
 ![Amazing Dash-Button](https://github.com/mwittig/pimatic-amazing-dash-button/raw/master/assets/images/dash-buttons.jpg)
 # pimatic-amazing-dash-button
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/mwittig/pimatic-amazing-dash-button.svg)](https://greenkeeper.io/)
+
 [![Npm Version](https://badge.fury.io/js/pimatic-amazing-dash-button.svg)](http://badge.fury.io/js/pimatic-amazing-dash-button)
 [![Build Status](https://travis-ci.org/mwittig/pimatic-amazing-dash-button.svg?branch=master)](https://travis-ci.org/mwittig/pimatic-amazing-dash-button)
 [![Dependency Status](https://david-dm.org/mwittig/pimatic-amazing-dash-button.svg)](https://david-dm.org/mwittig/pimatic-amazing-dash-button)
