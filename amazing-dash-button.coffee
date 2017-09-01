@@ -155,6 +155,9 @@ module.exports = (env) ->
 
 
   class AmazingDashButton extends env.devices.ContactSensor
+    actions:
+      trigger:
+        description: "Closes the contact for the configured holdTime. Called when the dash button has been triggered"
 
     @prepareConfig: (config) =>
       address = (config.macAddress || '').replace /\W/g, ''
@@ -173,15 +176,7 @@ module.exports = (env) ->
       @debug = @plugin.debug || false
       @base = commons.base @, @config.class
       @candidateInfoHandler = (info) =>
-        if not @timer? and info.mac is @macAddress
-          @base.debug "Amazon dash button triggered (#{info.mac})"
-          @_setContact not @_invert
-          clearTimeout @timer if @timer?
-          @timer = setTimeout( =>
-            @_setContact @_invert
-            @timer = null
-          , @config.holdTime
-          )
+        @trigger() if info.mac is @macAddress
       super()
       @plugin.on 'candidateInfo', @candidateInfoHandler
 
@@ -191,6 +186,19 @@ module.exports = (env) ->
       super()
 
     getContact: () -> Promise.resolve @_contact
+
+    trigger: () ->
+      # trigger contact for the configured holdTime, reset afterwards
+      if not @timer?
+        @base.debug "Amazon dash button triggered (#{@macAddress})"
+        @_setContact not @_invert
+        clearTimeout @timer if @timer?
+        @timer = setTimeout( =>
+          @_setContact @_invert
+          @timer = null
+        , @config.holdTime
+        )
+      Promise.resolve()
 
   # ###Finally
   # Create a instance of my plugin
