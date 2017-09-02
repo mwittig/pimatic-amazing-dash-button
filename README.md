@@ -99,7 +99,7 @@ is pressed you can create a rule as follows:
 ## Trigger Action
 
 It is also possible to trigger an `AmazingDashButton` device using the pimatic REST or WebSocket API as shown 
-in the example below for a given device with id `dash-1`. Calling the  device action will 
+in the example below for a given device with id `dash-1`. Calling the device action will 
 close the contact for the `holdTime`configured set as part of device configuration.
 
 ```bash

@@ -1,5 +1,10 @@
 # Release History
 
+* 20170902, V0.9.13
+    * Added debounce logic to avoid contact changing its state multiple times, issue #9
+    * Added trigger device action, issue #10
+    * Updated documentation
+    
 * 20170716, V0.9.12
     * Updated list of Amazon Vendor Ids, issue #8
     
