@@ -88,13 +88,24 @@ The device has the following configuration properties:
 | holdTime          | 1500     | Integer | The number of milliseconds the contact shall enter the state indicating button pressed (closed if not inverted) |
 
 
-## Trigger another device
+## Trigger Another Device
 
 The dash-button device is derived from `ContactSensor` and provides the following 
 predicate: `{device} is opened|closed`. For example, if you wish to toggle a `PowerSwitch` device when the dash-button 
 is pressed you can create a rule as follows: 
 
     when AmazingDashButton1 is closed then toggle {PowerSwitch Device}
+
+## Trigger Action
+
+It is also possible to trigger an `AmazingDashButton` device using the pimatic REST or WebSocket API as shown 
+in the example below for a given device with id `dash-1`. Calling the  device action will 
+close the contact for the `holdTime`configured set as part of device configuration.
+
+```bash
+curl --user "username:password" /api/device/dash-1/trigger
+```
+
 
 ## History
 
