@@ -176,7 +176,10 @@ module.exports = (env) ->
       @debug = @plugin.debug || false
       @base = commons.base @, @config.class
       @candidateInfoHandler = (info) =>
-        @trigger() if info.mac is @macAddress
+        if info.mac is @macAddress and not @callPending?
+          @trigger()
+          @callPending = setTimeout ( => @callPending = null), 3000
+
       super()
       @plugin.on 'candidateInfo', @candidateInfoHandler
 
