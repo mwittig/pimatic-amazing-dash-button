@@ -15,8 +15,18 @@ module.exports = (env) ->
       @interfaceAddress = @config.interfaceAddress if @config.interfaceAddress?
       @debug = @config.debug || false
       @base = commons.base @, 'Plugin'
-      @capture = new cap.Cap()
       @buffer = new Buffer(65536)
+      # List of registered Mac addresses with IEEE as of 15 July 2017 for Amazon Technologies Inc.
+      # source: https://regauth.standards.ieee.org/standards-ra-web/pub/view.html#registries
+      # 00BB3A is marked as private and has been reported to be used for dash-buttons
+      @amazonVendorIds = [
+        "F0D2F1", "8871E5", "FCA183", "F0272D", "74C246",
+        "6837E9", "78E103", "38F73D", "50DCE7", "A002DC",
+        "0C47C9", "747548", "AC63BE", "FCA667", "18742E",
+        "00FC8B", "FC65DE", "6C5697", "44650D", "50F5DA",
+        "6854FD", "40B4CD", "4CEFC0", "007147", "84D6D0",
+        "34D270", "B47C9C", "00BB3A"
+      ]
 
       process.on "SIGINT", @_stop
       @_start()
@@ -72,6 +82,14 @@ module.exports = (env) ->
         )
       )
 
+    _addMacToFilter: (mac) ->
+      vendorId = mac.replace(/:/g, '').substring(0,6).toUpperCase()
+      if @amazonVendorIds.indexOf(vendorId) is -1
+        @_stop()
+        @amazonVendorIds.push vendorId
+        @base.debug "Adding vendor id #{vendorId} to packet filter"
+        @_start()
+
     _start: () ->
       if @interfaceAddress?
         device = cap.findDevice @interfaceAddress
@@ -85,23 +103,14 @@ module.exports = (env) ->
         @base.error @noInterfacesFound
         return
 
-      # List of registered Mac addresses with IEEE as of 15 July 2017 for Amazon Technologies Inc.
-      # source: https://regauth.standards.ieee.org/standards-ra-web/pub/view.html#registries
-      # 00BB3A is marked as private and has been reported to be used for dash-buttons
-      amazonVendorIds = [
-        "F0D2F1", "8871E5", "F0272D", "74C246", "6837E9",
-        "78E103", "A002DC", "0C47C9", "747548", "AC63BE",
-        "FCA667", "18742E", "00FC8B", "FC65DE", "44650D",
-        "50F5DA", "6854FD", "40B4CD", "34D270", "84D6D0",
-        "B47C9C", "00BB3A"
-      ]
-      filter = amazonVendorIds.map( (vendorId) ->
+      filter = @amazonVendorIds.map( (vendorId) ->
         "(ether[6:2] == 0x#{vendorId.substring 0,4} and ether[8:1] == 0x#{vendorId.substring 4,6})"
       ).reduce( (left, right) ->
         left + " or " + right
       )
 
       pcapFilter = "(arp or (udp and src port 68 and dst port 67 and udp[247:4] == 0x63350103)) and (#{filter})"
+      @capture = new cap.Cap()
       linkType = @capture.open device, pcapFilter, 10 * 65536, @buffer
       try
         @capture.setMinBytes 0
@@ -111,8 +120,10 @@ module.exports = (env) ->
       @capture.on "packet", @_rawPacketHandler
 
     _stop: () =>
-      @capture.removeListener "packet", @_rawPacketHandler
-      @capture.close();
+      if @capture?
+        @capture.removeListener "packet", @_rawPacketHandler
+        @capture.close();
+        @capture = null
 
     _rawPacketHandler: () =>
       ret = cap.decoders.Ethernet @buffer
@@ -181,6 +192,7 @@ module.exports = (env) ->
           @callPending = setTimeout ( => @callPending = null), 3000
 
       super()
+      @plugin._addMacToFilter @macAddress
       @plugin.on 'candidateInfo', @candidateInfoHandler
 
     destroy: () ->
