@@ -1,5 +1,10 @@
 # Release History
 
+* 20171226, V0.9.14
+    * Updated list of Amazon Vendor Ids
+    * Devices with proprietary MAC addresses are now detected as part 
+      of the capture filter, issue #4
+      
 * 20170902, V0.9.13
     * Added debounce logic to avoid contact changing its state multiple times, issue #9
     * Added trigger device action, issue #10
