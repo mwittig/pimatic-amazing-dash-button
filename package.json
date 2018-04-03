@@ -42,7 +42,7 @@
   ],
   "configSchema": "amazing-dash-button-config-schema.coffee",
   "dependencies": {
-    "cap": "^0.1.2",
+    "cap": "^0.2.0",
     "pimatic-plugin-commons": "^0.9.3"
   },
   "optionalDependencies": {},
