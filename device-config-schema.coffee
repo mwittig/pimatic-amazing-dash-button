@@ -17,4 +17,13 @@ module.exports = {
         type: "integer"
         default: 1500
     }
+  DashButtonDevice:
+    title: "DashButtonDevice config"
+    type: "object"
+    extensions: ["xLink"]
+    properties: {
+      macAddress:
+        description: "MAC address of the dash-button"
+        type: "string"
+    }
 }
