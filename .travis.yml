@@ -12,3 +12,4 @@ before_install:
     - export CC="gcc-4.9" CXX="g++-4.9"
 node_js:
   - "4"
+  - "10"
