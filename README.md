@@ -28,9 +28,11 @@ the operation of the website and user forum.
 
 ## Installation
 
-**This plugin requires libpcap to capture ARP requests on the network**. On Raspberry PI and comparable systems 
+**This plugin requires libpcap to capture ARP requests on the network. Moreover, it is required to have python v2.7 installed**. 
+
+On Raspberry PI and comparable systems 
 `libpcap` must be installed, i.e. `sudo apt-get install libpcap-dev`. 
-On Windows, [WinPcap](http://www.winpcap.org/install/default.htm) must be installed.
+On Windows, [WinPcap](http://www.winpcap.org/install/default.htm) must be installed. As the installation procedure uses `node-gyp` you will also need to have `python v2.7` installed. Note, `python v3` is not supported! See [`node-gyp` installation notes for details](https://github.com/nodejs/node-gyp#installation).
 
 ### Dash-Button Installation
 
