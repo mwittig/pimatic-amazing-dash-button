@@ -63,6 +63,7 @@ The plugin has the following configuration properties:
 | Property          | Default  | Type    | Description                                 |
 |:------------------|:---------|:--------|:--------------------------------------------|
 | interfaceAddress  | -        | String  | IP address associated with the network interface which shall be used to listen to ARP requests (optional) |
+| ignoreMacAddresses| -        | Array   | MAC addresses of candidate devices which shall be ignored. Typically, this is used to exclude other Amazon devices like Fire Tablet PCs. |
 
 
 ## Device Configuration
@@ -78,7 +79,7 @@ device using the device editor.
           "id": "AmazingDashButton1",
           "name": "AmazingDashButton1",
           "class": "AmazingDashButton",
-          "macAddress": "AC:63:BE:B3:BE:78"
+          "macAddress": "ac:63:be:b3:be:78"
     }
 
 The device has the following configuration properties:

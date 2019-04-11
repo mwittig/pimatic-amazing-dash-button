@@ -13,6 +13,7 @@ module.exports = (env) ->
 
     init: (app, @framework, @config) =>
       @interfaceAddress = @config.interfaceAddress if @config.interfaceAddress?
+      @ignoreMacAddresses = @config.ignoreMacAddresses ? []
       @debug = @config.debug || false
       @base = commons.base @, 'Plugin'
       @buffer = new Buffer(65536)
@@ -82,6 +83,16 @@ module.exports = (env) ->
         )
       )
 
+    prepareConfig: (config) =>
+      addresses = config.ignoreMacAddresses || []
+      for address, index in addresses
+        address = address.replace /\W/g, ''
+        if address.length is 12
+          addresses[index] =
+            address.replace(/(.{2})/g, '$1:').toLowerCase().slice(0, -1)
+        else
+          env.logger.error "Invalid MAC address: #{address} in ignoreMacAddresses"
+
     _addMacToFilter: (mac) ->
       vendorId = mac.replace(/:/g, '').substring(0,6).toUpperCase()
       if @amazonVendorIds.indexOf(vendorId) is -1
@@ -109,7 +120,8 @@ module.exports = (env) ->
         left + " or " + right
       )
 
-      pcapFilter = "(arp or (udp and src port 68 and dst port 67 and udp[247:4] == 0x63350103)) and (#{filter})"
+      bootpFilter = "udp and src port 68 and dst port 67 and udp[247:4] == 0x63350103"
+      pcapFilter = "src host 0.0.0.0 and (arp or (#{bootpFilter})) and (#{filter})"
       @capture = new cap.Cap()
       linkType = @capture.open device, pcapFilter, 10 * 65536, @buffer
       try
@@ -131,16 +143,18 @@ module.exports = (env) ->
       if ret.info.type is cap.decoders.PROTOCOL.ETHERNET.IPV4
         r = cap.decoders.IPV4 @buffer, ret.offset
         dhcp = bootp.BOOTP @buffer, r.offset + 8
-        candidateInfo.mac = dhcp.info.clientmac
-        candidateInfo.ip = dhcp.info.requestedip
-        @base.debug "DHCP", candidateInfo
-        @emit 'candidateInfo', candidateInfo
+        if dhcp.info.clientmac not in @ignoreMacAddresses
+          candidateInfo.mac = dhcp.info.clientmac
+          candidateInfo.ip = dhcp.info.requestedip
+          @base.debug "DHCP", candidateInfo
+          @emit 'candidateInfo', candidateInfo
       else if ret.info.type is cap.decoders.PROTOCOL.ETHERNET.ARP
         arp = cap.decoders.ARP @buffer, ret.offset
-        candidateInfo.mac = arp.info.sendermac
-        candidateInfo.ip = arp.info.senderip
-        @base.debug "ARP", candidateInfo
-        @emit 'candidateInfo', candidateInfo
+        if arp.info.clientmac not in @ignoreMacAddresses
+          candidateInfo.mac = arp.info.sendermac
+          candidateInfo.ip = arp.info.senderip
+          @base.debug "ARP", candidateInfo
+          @emit 'candidateInfo', candidateInfo
 
     _probeChromeCastPort: (host, port=8008) ->
       if host?.length

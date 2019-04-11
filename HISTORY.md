@@ -1,5 +1,10 @@
 # Release History
 
+* unreleased
+    * Added feature "ignoreMacAddresses" to plugin configuration to 
+      filter out requests from the given list of MAC addresses
+    * Added source host IP filter to filtering string to further limit
+      the number of matching packages
 * 20171226, V0.9.14
     * Updated list of Amazon Vendor Ids
     * Devices with proprietary MAC addresses are now detected as part 

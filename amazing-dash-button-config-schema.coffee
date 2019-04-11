@@ -13,4 +13,14 @@ module.exports = {
         "
       type: "string"
       required: false
+    ignoreMacAddresses:
+      description: "
+        MAC addresses of candidate devices which shall be ignored. Typically, this is used to exclude other Amazon devices
+        like Fire Tablet PCs.
+        "
+      type: "array"
+      default: []
+      format: "table"
+      items:
+        type: "string"
 }
