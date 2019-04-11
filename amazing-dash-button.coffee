@@ -7,6 +7,13 @@ module.exports = (env) ->
   bootp = require './bootp'
   commons = require('pimatic-plugin-commons')(env)
 
+  extractAddress = (config) ->
+    address = (config.macAddress || '').replace /\W/g, ''
+    if address.length is 12
+      config.macAddress = address.replace(/(.{2})/g, '$1:').toLowerCase().slice(0, -1)
+    else
+      env.logger.error "Invalid MAC address: #{config.macAddress || 'Property "address" missing'}"
+
 
   # ###AmazingDashButtonPlugin class
   class AmazingDashButtonPlugin extends env.plugins.Plugin
@@ -38,6 +45,12 @@ module.exports = (env) ->
         configDef: deviceConfigDef.AmazingDashButton,
         createCallback: (@config, lastState) =>
           new AmazingDashButton(@config, @, lastState)
+      )
+      @framework.deviceManager.registerDeviceClass("DashButtonDevice",
+        prepareConfig: DashButtonDevice.prepareConfig
+        configDef: deviceConfigDef.DashButtonDevice,
+        createCallback: (@config, lastState) =>
+          new DashButtonDevice(@config, @, lastState)
       )
 
       # auto-discovery
@@ -164,18 +177,13 @@ module.exports = (env) ->
       else
         Promise.resolve false
 
-
   class AmazingDashButton extends env.devices.ContactSensor
     actions:
       trigger:
         description: "Closes the contact for the configured holdTime. Called when the dash button has been triggered"
 
     @prepareConfig: (config) =>
-      address = (config.macAddress || '').replace /\W/g, ''
-      if address.length is 12
-        config.macAddress = address.replace(/(.{2})/g, '$1:').toLowerCase().slice(0, -1)
-      else
-        env.logger.error "Invalid MAC address: #{config.macAddress || 'Property "address" missing'}"
+      extractAddress(config)
 
     # Initialize device by reading entity definition from middleware
     constructor: (@config, @plugin, lastState) ->
@@ -214,6 +222,34 @@ module.exports = (env) ->
         , @config.holdTime
         )
       Promise.resolve()
+
+  class DashButtonDevice extends env.devices.ButtonsDevice
+
+    @prepareConfig: (config) =>
+      extractAddress(config)
+
+    constructor: (@config, @plugin, lastState)->
+      @config.buttons = [{"id": @config.id, "text": "Press"}]
+      super(@config)
+      @macAddress = @config.macAddress
+      @debug = @plugin.debug || false
+      @base = commons.base @, @config.class
+      @candidateInfoHandler = (info) =>
+        if info.mac is @macAddress and not @callPending?
+          @buttonPressed()
+          @callPending = setTimeout ( => @callPending = null), 3000
+      @plugin._addMacToFilter @macAddress
+      @plugin.on 'candidateInfo', @candidateInfoHandler
+
+    destroy: () ->
+      @plugin.removeListener 'candidateInfo', @candidateInfoHandler
+      super()
+
+    buttonPressed: ->
+      @base.debug "Amazon dash button triggered (#{@macAddress})"
+      @_lastPressedButton = @id
+      @emit 'button', @id
+      return Promise.resolve()
 
   # ###Finally
   # Create a instance of my plugin

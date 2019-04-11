@@ -6,7 +6,7 @@
 [![Dependency Status](https://david-dm.org/mwittig/pimatic-amazing-dash-button.svg)](https://david-dm.org/mwittig/pimatic-amazing-dash-button)
 
 
-A pimatic plugin for Amazon's dash-buttons. It is a pretty light-weight implementation which uses a `ContactSensor` 
+A pimatic plugin for Amazon's dash-buttons. It is a pretty light-weight implementation which uses a `ContactSensor` or `ButtonsDevice` 
 device abstraction for the dash-button. Auto-discovery of dash-buttons is supported.
 
 The plugin sniffs for ARP probes which will be sent out by a dash-button when the 
@@ -89,24 +89,50 @@ The device has the following configuration properties:
 | invert            | false    | String  | If true, invert the contact state, i.e., contact is 'closed' if dash-button not pressed |
 | holdTime          | 1500     | Integer | The number of milliseconds the contact shall enter the state indicating button pressed (closed if not inverted) |
 
+You can also use your dash-button device as `DashButtonDevice`. This device type will act like a ButtonsDevice with one button. 
+The configuration is 
+
+     {
+           "id": "DashButtonDevice1",
+           "name": "DashButtonDevice1",
+           "class": "DashButtonDevice",
+           "macAddress": "AC:63:BE:B3:BE:78"
+     }
+
+The `DashButtonDevice` only supports the `macAddress` property. 
+
+When using the automatic discovery mode, just change the class to `DashButtonDevice` and copy the `macAddress` property.
+
 
 ## Trigger Another Device
 
-The dash-button device is derived from `ContactSensor` and provides the following 
+The `AmazingDashButton` is derived from `ContactSensor` and provides the following 
 predicate: `{device} is opened|closed`. For example, if you wish to toggle a `PowerSwitch` device when the dash-button 
 is pressed you can create a rule as follows: 
 
     when AmazingDashButton1 is closed then toggle {PowerSwitch Device}
+    
+For the `DashButtonDevice` the predicate is `{device} is pressed`, so this would lead to this rule:
+
+    when DashButtonDevice1 is pressed then toggle {PowerSwitch Device}
+
 
 ## Trigger Action
 
 It is also possible to trigger an `AmazingDashButton` device using the pimatic REST or WebSocket API as shown 
 in the example below for a given device with id `dash-1`. Calling the device action will 
-close the contact for the `holdTime`configured set as part of device configuration.
+close the contact for the `holdTime` configured set as part of device configuration.
 
 ```bash
 curl --user "username:password" /api/device/dash-1/trigger
 ```
+
+For a `DashButtonDevice` this would be: 
+
+```bash
+curl --user "username:password" /api/device/dash-1/buttonPressed?buttonId=dash-1
+```
+
 
 
 ## History
