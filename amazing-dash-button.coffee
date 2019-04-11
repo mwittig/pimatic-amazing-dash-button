@@ -23,7 +23,7 @@ module.exports = (env) ->
       @ignoreMacAddresses = @config.ignoreMacAddresses ? []
       @debug = @config.debug || false
       @base = commons.base @, 'Plugin'
-      @buffer = new Buffer(65536)
+      @buffer = Buffer.alloc(65536)
       # List of registered Mac addresses with IEEE as of 15 July 2017 for Amazon Technologies Inc.
       # source: https://regauth.standards.ieee.org/standards-ra-web/pub/view.html#registries
       # 00BB3A is marked as private and has been reported to be used for dash-buttons
