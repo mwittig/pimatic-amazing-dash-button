@@ -97,7 +97,7 @@ The configuration is
            "id": "DashButtonDevice1",
            "name": "DashButtonDevice1",
            "class": "DashButtonDevice",
-           "macAddress": "AC:63:BE:B3:BE:78"
+           "macAddress": "ac:63:be:b3:be:78"
      }
 
 The `DashButtonDevice` only supports the `macAddress` property. 
@@ -142,6 +142,6 @@ See [Release History](https://github.com/mwittig/pimatic-amazing-dash-button/blo
 
 ## License 
 
-Copyright (c) 2016, Marcus Wittig and contributors. All rights reserved.
+Copyright (c) 2016-2019, Marcus Wittig and contributors. All rights reserved.
 
 [AGPL-3.0](https://github.com/mwittig/pimatic-amazing-dash-button/blob/master/LICENSE)
