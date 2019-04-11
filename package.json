@@ -19,9 +19,11 @@
   ],
   "keywords": [
     "amazon-dash",
-    "amazona dash-button",
+    "amazon-dash-button",
+    "dash-buttons",
     "dash-button",
-    "arp",
+    "dashbutton",
+    "pimatic-plugin",
     "pimatic"
   ],
   "homepage": "https://github.com/mwittig/pimatic-amazing-dash-button/tree/master",
@@ -42,8 +44,8 @@
   ],
   "configSchema": "amazing-dash-button-config-schema.coffee",
   "dependencies": {
-    "cap": "^0.2.0",
-    "pimatic-plugin-commons": "^0.9.3"
+    "cap": "git+https://github.com/mwittig/cap.git",
+    "pimatic-plugin-commons": "^0.9.10"
   },
   "optionalDependencies": {},
   "peerDependencies": {
