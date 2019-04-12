@@ -134,7 +134,11 @@ For a `DashButtonDevice` this would be:
 curl --user "username:password" /api/device/dash-1/buttonPressed?buttonId=dash-1
 ```
 
+## Trouble Shooting
+ 
+* "TypeError: Buffer.alloc is not a function" during installation
 
+  Make sure, you have node version 4.5 or greater installed. 
 
 ## History
 

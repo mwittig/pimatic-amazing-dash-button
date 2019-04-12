@@ -1,6 +1,9 @@
 # Release History
 
 * unreleased
+    * Important Note: Make sure, you have node version 4.5 or greater 
+      installed. Otherwise, a "TypeError: Buffer.alloc is not a function" 
+      may occur
     * Added feature "ignoreMacAddresses" to plugin configuration to 
       filter out requests from the given list of MAC addresses
     * Added source host IP filter to filtering string to further limit
