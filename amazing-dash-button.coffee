@@ -66,6 +66,21 @@ module.exports = (env) ->
         @candidatesSeen = []
         @lastId = null
 
+        @createNewDevice = (className, info, candidateAddress) =>
+          @lastId = @base.generateDeviceId @framework, "dash", @lastId
+
+          deviceConfig =
+            id: @lastId
+            name: @lastId
+            class: className
+            macAddress: candidateAddress
+
+          @framework.deviceManager.discoveredDevice(
+            'pimatic-amazing-dash-button',
+            "#{deviceConfig.name} (#{className}, #{deviceConfig.macAddress}, #{info.ip})",
+            deviceConfig
+          )
+
         @candidateInfoHandler = (info) =>
           candidateAddress = info.mac
           if candidateAddress not in @candidatesSeen
@@ -75,19 +90,8 @@ module.exports = (env) ->
               if probeSucceeded
                 @base.debug 'Amazon device appears to be a Chromecast server: ' + candidateAddress
               else
-                @lastId = @base.generateDeviceId @framework, "dash", @lastId
-
-                deviceConfig =
-                  id: @lastId
-                  name: @lastId
-                  class: 'AmazingDashButton'
-                  macAddress: candidateAddress
-
-                @framework.deviceManager.discoveredDevice(
-                  'pimatic-amazing-dash-button',
-                  "#{deviceConfig.name} (#{deviceConfig.macAddress}, #{info.ip})",
-                  deviceConfig
-                )
+                @createNewDevice 'AmazingDashButton', info, candidateAddress
+                @createNewDevice 'DashButton', info, candidateAddress
 
         @on 'candidateInfo', @candidateInfoHandler
         @timer = setTimeout( =>

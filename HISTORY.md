@@ -6,6 +6,7 @@
     * Added source host IP filter to filtering string to further limit
       the number of matching packages
     * Merged DashButtonDevice from pimatic-dash-button, thanks @michbeck100
+    * Added discovery of DashButtonDevice candidates
     * Updated dependencies
       
 * 20171226, V0.9.14
