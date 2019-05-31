@@ -1,7 +1,7 @@
 {
   "name": "pimatic-amazing-dash-button",
   "description": "Pimatic plugin for Amazon's dash-buttons",
-  "version": "0.9.14",
+  "version": "0.9.15",
   "author": {
     "name": "Marcus Wittig",
     "url": "https://github.com/mwittig"

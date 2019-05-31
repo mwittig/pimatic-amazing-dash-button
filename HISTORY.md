@@ -1,6 +1,6 @@
 # Release History
 
-* unreleased
+* 20190531, V0.9.15
     * Important Note: Make sure, you have node version 4.5 or greater 
       installed. Otherwise, a "TypeError: Buffer.alloc is not a function" 
       may occur
@@ -10,6 +10,7 @@
       the number of matching packages
     * Merged DashButtonDevice from pimatic-dash-button, thanks @michbeck100
     * Added discovery of DashButtonDevice candidates
+    * Now using fork of cap to avoid assertion error during capture
     * Updated dependencies
       
 * 20171226, V0.9.14
